@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>メディアビューア</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1 class="header__title">メディアビューア</h1>
+        <div class="header__actions">
+          <label class="btn btn--primary">
+            ファイルを選択
+            <input type="file" id="file-input" accept=".pdf,.epub,.mp4,.webm,.ogg,.mov" hidden />
+          </label>
+        </div>
+      </header>
+
+      <main class="main">
+        <div id="drop-zone" class="drop-zone">
+          <p class="drop-zone__text">ファイルをドラッグ&ドロップ</p>
+          <p class="drop-zone__hint">PDF / EPUB / 動画（mp4, webm, ogg 等）</p>
+        </div>
+        <div id="viewer-container" class="viewer-container hidden"></div>
+        <div id="error-message" class="error-message hidden"></div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
