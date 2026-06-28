@@ -50,8 +50,8 @@ export class App {
     const fileParam = getFileParam();
     if (!fileParam) return;
 
-    const url = resolveFileUrl(fileParam);
-    const name = getFilenameFromUrl(fileParam);
+    const url = await resolveFileUrl(fileParam);
+    const name = getFilenameFromUrl(url);
     const type = detectMediaType(name);
 
     if (!type) {

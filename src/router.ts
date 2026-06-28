@@ -17,13 +17,50 @@ export function getFileParam(): string | null {
   return params.get('file');
 }
 
-export function resolveFileUrl(fileParam: string): string {
-  if (/^https?:\/\//i.test(fileParam)) {
+function isExternalUrl(fileParam: string): boolean {
+  return /^https?:\/\//i.test(fileParam);
+}
+
+function normalizeLocalPath(fileParam: string): string {
+  return fileParam.startsWith('/') ? fileParam : `/${fileParam}`;
+}
+
+async function urlExists(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function resolveFileUrl(fileParam: string): Promise<string> {
+  if (isExternalUrl(fileParam)) {
     return fileParam;
   }
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-  const path = fileParam.startsWith('/') ? fileParam : `/${fileParam}`;
-  return `${base}${path}`;
+
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const path = normalizeLocalPath(fileParam);
+
+  if (normalizedBase !== '/' && path.startsWith(normalizedBase)) {
+    return path;
+  }
+
+  const baseCandidate = normalizedBase === '/' ? path : `${normalizedBase.replace(/\/$/, '')}${path}`;
+  if (baseCandidate === path) {
+    return baseCandidate;
+  }
+
+  if (await urlExists(baseCandidate)) {
+    return baseCandidate;
+  }
+
+  if (await urlExists(path)) {
+    return path;
+  }
+
+  return baseCandidate;
 }
 
 export function getFilenameFromUrl(url: string): string {
